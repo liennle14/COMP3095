@@ -29,6 +29,9 @@ dependencies {
     developmentOnly("org.springframework.boot:spring-boot-devtools:3.0.4")
     annotationProcessor("org.projectlombok:lombok:1.18.26")
     testImplementation("org.springframework.boot:spring-boot-starter-test:3.1.0")
+    implementation("org.testcontainers:testcontainers-bom:1.18.1")
+    testImplementation ("org.testcontainers:mongodb:1.18.1")
+
 }
 
 tasks.withType<Test> {
