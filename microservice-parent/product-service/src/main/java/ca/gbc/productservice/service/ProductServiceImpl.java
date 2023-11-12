@@ -41,6 +41,7 @@ public class ProductServiceImpl implements ProductService {
 
     }
 
+
     @Override
     public String updateProduct(String productId, ProductRequest productRequest) {
         log.info("Updating a product with id {}", productId);

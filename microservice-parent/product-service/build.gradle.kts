@@ -25,6 +25,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-actuator:3.1.0")
     implementation("org.springframework.boot:spring-boot-starter-data-mongodb:3.0.7")
     implementation("org.springframework.boot:spring-boot-starter-web:3.1.0")
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     compileOnly("org.projectlombok:lombok:1.18.26")
     developmentOnly("org.springframework.boot:spring-boot-devtools:3.0.4")
     annotationProcessor("org.projectlombok:lombok:1.18.26")
