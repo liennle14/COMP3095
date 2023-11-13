@@ -2,6 +2,21 @@ version: '3.8'
 
 services:
 
+  inventory-service:
+    image: inventory-service
+    build:
+      context: ./inventory-service
+      dockerfile: ./Dockerfile
+    container_name: inventory-service
+    ports:
+      - "8085:8085"
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+    depends_on:
+      - postgres-inventory
+    networks:
+      - spring
+
   order-service:
     image: order-service
     build:
@@ -14,6 +29,23 @@ services:
       SPRING_PROFILES_ACTIVE: docker
     depends_on:
       - postgres-order
+    networks:
+      - spring
+
+
+  postgres-inventory:
+    image: postgres:latest
+    container_name: postgres-inventory-gbc
+    ports:
+      - "5434:5432"
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=order-service
+    volumes:
+      - ./data/postgres/inventory-service:/data/postgres
+      - ./init/postgres/inventory-service/init.sql/:/docker-entrypoint-initdb.d/init.sql
+    restart: unless-stopped
     networks:
       - spring
 
