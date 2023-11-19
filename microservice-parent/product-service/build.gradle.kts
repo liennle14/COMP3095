@@ -1,6 +1,6 @@
 plugins {
     java
-    id("org.springframework.boot") version "3.1.3"
+    id("org.springframework.boot") version "3.1.4"
     id("io.spring.dependency-management") version "1.1.3"
 }
 
@@ -22,17 +22,16 @@ repositories {
 }
 
 dependencies {
-    implementation("org.springframework.boot:spring-boot-starter-actuator:3.1.0")
-    implementation("org.springframework.boot:spring-boot-starter-data-mongodb:3.0.7")
-    implementation("org.springframework.boot:spring-boot-starter-web:3.1.0")
-    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-    compileOnly("org.projectlombok:lombok:1.18.26")
-    developmentOnly("org.springframework.boot:spring-boot-devtools:3.0.4")
-    annotationProcessor("org.projectlombok:lombok:1.18.26")
-    testImplementation("org.springframework.boot:spring-boot-starter-test:3.1.0")
-    implementation("org.testcontainers:testcontainers-bom:1.18.1")
-    testImplementation ("org.testcontainers:mongodb:1.18.1")
-
+    implementation("org.springframework.boot:spring-boot-starter-actuator")
+    implementation("org.springframework.boot:spring-boot-starter-data-mongodb")
+    implementation("org.springframework.boot:spring-boot-starter-web")
+    compileOnly("org.projectlombok:lombok")
+    developmentOnly("org.springframework.boot:spring-boot-devtools")
+    annotationProcessor("org.projectlombok:lombok")
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
+    implementation(enforcedPlatform("org.testcontainers:testcontainers-bom:1.16.0"))
+    implementation("org.testcontainers:mongodb")
+    implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client:4.0.3")
 }
 
 tasks.withType<Test> {

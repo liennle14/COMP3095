@@ -1,6 +1,34 @@
 version: '3.8'
 
 services:
+  api-gateway:
+    image: api-gateway
+    ports:
+      - "8182:8182"
+    build:
+      context: ./api-gateway
+      dockerfile: ./Dockerfile
+    container_name: api-gateway
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+    depends_on:
+      - discovery-service
+    networks:
+      - spring
+  discovery-service:
+    image: discovery-service
+    build:
+      context: ./discovery-service
+      dockerfile: ./Dockerfile
+    container_name: discovery-service
+    ports:
+      - "8089:8089"
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      eureka.instance.hostname: discovery-service
+      eureka.client.serviceUrl.defaultZone: http://discovery-service:8761/eureka
+    networks:
+      - spring
 
   inventory-service:
     image: inventory-service
@@ -9,11 +37,14 @@ services:
       dockerfile: ./Dockerfile
     container_name: inventory-service
     ports:
-      - "8085:8085"
+      - "8084:8084"
     environment:
       SPRING_PROFILES_ACTIVE: docker
+      eureka.instance.hostname: discovery-service
+      eureka.client.serviceUrl.defaultZone: http://discovery-service:8761/eureka
     depends_on:
       - postgres-inventory
+      - discovery-service
     networks:
       - spring
 
@@ -27,41 +58,43 @@ services:
       - "8082:8082"
     environment:
       SPRING_PROFILES_ACTIVE: docker
+      eureka.instance.hostname: discovery-service
+      eureka.client.serviceUrl.defaultZone: http://discovery-service:8761/eureka
     depends_on:
       - postgres-order
+      - discovery-service
     networks:
       - spring
 
-
   postgres-inventory:
-    image: postgres:latest
-    container_name: postgres-inventory-gbc
+    image: postgres
+    restart: unless-stopped
     ports:
       - "5434:5432"
     environment:
       - POSTGRES_USER=admin
       - POSTGRES_PASSWORD=password
-      - POSTGRES_DB=order-service
+      - POSTGRES_DB=inventory-service
     volumes:
-      - ./data/postgres/inventory-service:/data/postgres
-      - ./init/postgres/inventory-service/init.sql/:/docker-entrypoint-initdb.d/init.sql
-    restart: unless-stopped
+      - ./data/postgres/order-service:/var/lib/postgres
+      - ./init/postgres/inventory-service/init.sql:/docker-entrypoint-initdb.d/init.sql
+    container_name: postgresdb-inventory
     networks:
-      - spring
+        - spring
 
   postgres-order:
-    image: postgres:latest
-    container_name: postgres-order-gbc
-    ports:
-      - "5432:5432"
-    environment:
-        - POSTGRES_USER=admin
-        - POSTGRES_PASSWORD=password
-        - POSTGRES_DB=order-service
-    volumes:
-        - ./data/postgres/order-service:/data/postgres
-        - ./init/postgres/order-service/init.sql/:/docker-entrypoint-initdb.d/init.sql
+    image: postgres
     restart: unless-stopped
+    ports:
+      - "5433:5432"
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=order-service
+    volumes:
+      - ./data/postgres/order-service:/var/lib/postgresql/data
+      - ./init/postgres/order-service/init.sql:/docker-entrypoint-initdb.d/init.sql
+    container_name: postgresdb-order
     networks:
         - spring
 
@@ -75,8 +108,11 @@ services:
       - "8081:8081"
     environment:
       SPRING_PROFILES_ACTIVE: docker
+      eureka.instance.hostname: discovery-service
+      eureka.client.serviceUrl.defaultZone: http://discovery-service:8761/eureka
     depends_on:
       - mongodb
+      - discovery-service
     networks:
       - spring
 
@@ -110,6 +146,10 @@ services:
 
 networks:
     spring:
+        driver: bridge
+    mongo:
+        driver: bridge
+    postgres:
         driver: bridge
         
       #mongo-init.js is a file that contains the initial data to be inserted into the database and allows read and write

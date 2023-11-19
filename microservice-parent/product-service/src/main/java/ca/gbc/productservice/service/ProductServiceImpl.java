@@ -26,6 +26,7 @@ public class ProductServiceImpl implements ProductService {
     public void createProduct(ProductRequest productRequest) {
         log.info("Creating a new product {}", productRequest.getName());
 
+
         Product product = Product.builder()
                 .name(productRequest.getName())
                 .description(productRequest.getDescription())
@@ -36,16 +37,12 @@ public class ProductServiceImpl implements ProductService {
 
         log.info("Product {} is saved", product.getId());
 
-
-
-
     }
 
 
     @Override
     public String updateProduct(String productId, ProductRequest productRequest) {
         log.info("Updating a product with id {}", productId);
-
         Query query = new Query();
         query.addCriteria(Criteria.where("id").is(productId));
         Product product = mongoTemplate.findOne(query, Product.class);
