@@ -23,7 +23,7 @@ public class ProductServiceImpl implements ProductService {
     private final MongoTemplate mongoTemplate;
 
     @Override
-    public void createProduct(ProductRequest productRequest) {
+    public String createProduct(ProductRequest productRequest) {
         log.info("Creating a new product {}", productRequest.getName());
 
 
@@ -35,7 +35,7 @@ public class ProductServiceImpl implements ProductService {
 
         productRepository.save(product);
 
-        log.info("Product {} is saved", product.getId());
+        return("Product {} is saved" + product.getId());
 
     }
 
@@ -66,7 +66,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<ProductResponse> getAllProduct() {
+    public List<ProductResponse> getAllProducts() {
 
         log.info("Returning a list of products");
         List<Product> products = productRepository.findAll();

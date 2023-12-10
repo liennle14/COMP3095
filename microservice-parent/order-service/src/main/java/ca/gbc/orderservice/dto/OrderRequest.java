@@ -10,8 +10,8 @@ import java.util.List;
 
 @Data
 @AllArgsConstructor
-//@NoArgsConstructor
+@NoArgsConstructor
 @Builder
 public class OrderRequest {
-    private final List<OrderLineItemDto> orderLineItemDtoList = new ArrayList<>();
+    private List<OrderLineItemDTO> OrderLineItemDTOList = new ArrayList<OrderLineItemDTO>();
 }

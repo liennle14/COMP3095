@@ -21,8 +21,8 @@ RUN mkdir /app
 
 COPY --from=builder /home/gradle/src/build/libs/*.jar /app/api-gateway.jar
 
-EXPOSE 8182
+EXPOSE 8181
 
 # Execute the following 1 command after the container starts
-# CMD ["java", "-jar", "app/api-gateway.jar"]
+CMD ["java", "-jar", "app/api-gateway.jar"]
 ENTRYPOINT ["java", "-jar", "/app/api-gateway.jar"]

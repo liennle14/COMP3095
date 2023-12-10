@@ -1,20 +1,48 @@
 version: '3.8'
 
 services:
+  keycloak:
+    image: jboss/keycloak
+    ports:
+      - "8085:8085"
+    restart: unless-stopped
+    container_name: keycloak
+    environment:
+      JBOSS_LOG_MANAGER_ROOT_LOGGER: DEBUG
+      DB_VENDOR: postgres
+      DB_ADDR: postgres-keycloak
+      DB_DATABASE: keycloak
+      DB_USER: keycloak
+      DB_PASSWORD: password
+      KEYCLOAK_USER: admin
+      KEYCLOAK_PASSWORD: password
+      KEYCLOAK_IMPORT: /opt/jboss/keycloak/realms/realm-export.json
+      JWT_ISSUER_URI: http://keycloak:8080/auth/realms/spring-boot-microservices-realm
+    volumes:
+      - ./realms/:/opt/jboss/keycloak/realms
+    depends_on:
+      - postgres-keycloak
+    networks:
+      - spring
+
   api-gateway:
     image: api-gateway
     ports:
-      - "8182:8182"
+      - "8181:8181"
+    restart: unless-stopped
     build:
       context: ./api-gateway
       dockerfile: ./Dockerfile
     container_name: api-gateway
     environment:
       SPRING_PROFILES_ACTIVE: docker
+      eureka.client.serviceUrl.defaultZone: http://discovery-service:8761/eureka
+      LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_SECURITY: DEBUG
     depends_on:
       - discovery-service
     networks:
       - spring
+
   discovery-service:
     image: discovery-service
     build:
@@ -66,6 +94,22 @@ services:
     networks:
       - spring
 
+  postgres-keycloak:
+    image: postgres
+    container_name: postgres-keycloak
+    restart: unless-stopped
+    ports:
+      - "5435:5432"
+    environment:
+      - POSTGRES_USER=keycloak
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=keycloak
+      - PGDATA= /data/postgres
+    volumes:
+      - ./data/postgres/postgres-keycloak:/data/postgres
+    networks:
+      - spring
+
   postgres-inventory:
     image: postgres
     restart: unless-stopped
@@ -76,7 +120,7 @@ services:
       - POSTGRES_PASSWORD=password
       - POSTGRES_DB=inventory-service
     volumes:
-      - ./data/postgres/order-service:/var/lib/postgres
+      - ./data/postgres/inventory-service:/var/lib/postgres
       - ./init/postgres/inventory-service/init.sql:/docker-entrypoint-initdb.d/init.sql
     container_name: postgresdb-inventory
     networks:

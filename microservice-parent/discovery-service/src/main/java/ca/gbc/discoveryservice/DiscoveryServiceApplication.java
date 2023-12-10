@@ -13,3 +13,4 @@ public class DiscoveryServiceApplication {
 	}
 
 }
+//first class to run

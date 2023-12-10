@@ -2,7 +2,7 @@ package ca.gbc.orderservice.service;
 
 import ca.gbc.orderservice.dto.InventoryRequest;
 import ca.gbc.orderservice.dto.InventoryResponse;
-import ca.gbc.orderservice.dto.OrderLineItemDto;
+import ca.gbc.orderservice.dto.OrderLineItemDTO;
 import ca.gbc.orderservice.dto.OrderRequest;
 import ca.gbc.orderservice.model.OrderLineItem;
 import ca.gbc.orderservice.repository.OrderRepository;
@@ -26,22 +26,23 @@ public class OrderServiceImpl implements OrderService{
     private final OrderRepository orderRepository;
     private final WebClient webClient;
     private final WebClient.Builder webClientBuilder;
-    @Value("http://inventory-service/api/inventory")
-    private String inventoryApiUrl = "http://inventory-service/api/inventory";
+    @Value("${inventory.service.url}")
+    private String inventoryApiUrl;
 
-
-    public void placeOrder(OrderRequest orderRequest) {
+    @Override
+    public String placeOrder(OrderRequest orderRequest) {
         Order order = new Order();
         order.setOrderNumber(UUID.randomUUID().toString());
-        List<OrderLineItem> orderLineItemList = orderRequest
-                .getOrderLineItemDtoList()
+        List<OrderLineItem> orderLineItems = orderRequest
+                .getOrderLineItemDTOList()
                 .stream()
                 .map(this::mapToDto)
                 .toList();
-        order.setOrderLineItemList(orderLineItemList);
+        order.setOrderLineItemList(orderLineItems);
 
         List<InventoryRequest> inventoryRequests = order.getOrderLineItemList()
-                .stream().map(orderLineItem -> InventoryRequest
+                .stream()
+                .map(orderLineItem -> InventoryRequest
                         .builder()
                         .skuCode(orderLineItem.getSkuCode())
                         .quantity(orderLineItem.getQuantity())
@@ -71,12 +72,13 @@ public class OrderServiceImpl implements OrderService{
         }
 
 
-        orderRepository.save(order);
-        log.info("Order placed successfully");
+//        orderRepository.save(order);
         webClientBuilder.build();
+        log.info("Order placed successfully");
+        return "Order placed successfully";
     }
 
-    private OrderLineItem mapToDto(OrderLineItemDto orderLineItemDto) {
+    private OrderLineItem mapToDto(OrderLineItemDTO orderLineItemDto) {
         OrderLineItem orderLineItem = new OrderLineItem();
         orderLineItem.setPrice(orderLineItemDto.getPrice());
         orderLineItem.setQuantity(orderLineItemDto.getQuantity());

@@ -26,6 +26,12 @@ extra["springCloudVersion"] = "2022.0.4"
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-actuator")
 	implementation("org.springframework.boot:spring-boot-starter-web")
+	implementation("org.springframework.boot:spring-boot-actuator")
+	implementation("org.springframework.boot:spring-boot-starter-security")
+	implementation("io.micrometer:micrometer-observation")
+	implementation("io.micrometer:micrometer-tracing-bridge-brave")
+	implementation("io.zipkin.reporter2:zipkin-reporter-brave")
+
 	implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-server:4.0.3")
 	compileOnly("org.projectlombok:lombok:1.18.26")
 	developmentOnly("org.springframework.boot:spring-boot-devtools")

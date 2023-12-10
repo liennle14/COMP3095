@@ -19,13 +19,15 @@ public class ProductController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public void createProduct(@RequestBody ProductRequest productRequest){
+    public ResponseEntity<String>createProduct(@RequestBody ProductRequest productRequest){
         productService.createProduct(productRequest);
+        String successMessage = "{\"Product created\"}";
+        return new ResponseEntity<>(successMessage, HttpStatus.CREATED);
     }
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public List<ProductResponse> getAllProducts(){
-        return productService.getAllProduct();
+        return productService.getAllProducts();
     }
 
     @PutMapping({"/{productId}"})
